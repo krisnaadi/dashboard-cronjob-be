@@ -1,0 +1,39 @@
+services:
+  docker-cronjob-be:
+    depends_on:
+      - db
+    build:
+      context: .
+    container_name: cronjob-be
+    hostname: cronjob-be
+    networks:
+      - mynet
+    ports:
+      - 80:8080
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: cronjob
+      POSTGRES_PASSWORD: cronjob
+      POSTGRES_DB: cronjob
+    ports:
+      - 5432:5432
+    networks:
+      - mynet
+    volumes:
+      - pgdata:/var/lib/postgresql/data 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - mynet
+
+volumes:
+  pgdata:
+
+networks:
+  mynet:
+    driver: bridge

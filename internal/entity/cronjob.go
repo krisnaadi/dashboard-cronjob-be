@@ -9,7 +9,7 @@ type Cronjob struct {
 	Name      string
 	Schedule  string
 	Task      string
-	Status    string
+	Status    bool
 	UserId    int64
 	CreatedAt time.Time
 	UpdatedAt *time.Time

@@ -7,24 +7,28 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-playground/validator"
+	"github.com/gosimple/slug"
+	_ "github.com/joho/godotenv/autoload"
 	app "github.com/krisnaadi/dashboard-cronjob-be/internal/app"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/clocker"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/config"
-	"github.com/labstack/echo/middleware"
+	"github.com/krisnaadi/dashboard-cronjob-be/pkg/customvalidator"
+	"github.com/krisnaadi/dashboard-cronjob-be/pkg/logger"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 const (
 	timeoutServer = 60
-	port          = 8080
+	port          = 8081
 )
 
 type Server struct {
-	handler    *app.Handlers
-	http       *http.Server
-	middleware *app.Middleware
+	handler *app.Handlers
+	http    *http.Server
 }
 
 func NewHTTP(ctx context.Context) *Server {
@@ -39,11 +43,11 @@ func NewHTTP(ctx context.Context) *Server {
 	useCase := app.NewUseCase(resource)
 	handler := app.NewHandler(useCase)
 
-	middleware := app.NewMiddleware(useCase)
+	logger.Init(slug.Make(config.Get("APP_NAME")))
+	logger.Info(ctx, nil, nil, "Connecting - NewHTTP")
 
 	return &Server{
-		handler:    handler,
-		middleware: middleware,
+		handler: handler,
 	}
 }
 
@@ -57,11 +61,19 @@ func (s *Server) Run() *http.Server {
 		}
 	}
 
+	//add cusstom validation
+	customValidationMap := make(map[string]func(fl validator.FieldLevel) bool)
+	customValidationMap["date"] = customvalidator.ValidateDateFormat
+
+	customValidator := customvalidator.CustomValidaton(customValidationMap)
+
+	e.Validator = customValidator
+
 	// Allow CORS requests
 	e.Use(middleware.CORS())
 
 	e.GET("/", handleHelloWorld)
-	NewRouter(e, s.handler, s.middleware)
+	NewRouter(e, s.handler)
 
 	s.http = &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),
@@ -76,11 +88,12 @@ func (s *Server) Run() *http.Server {
 }
 
 func handleHelloWorld(ctx echo.Context) error {
-	return ctx.String(http.StatusOK, "Hello World : ")
+	return ctx.String(http.StatusOK, "Hello World : "+clocker.Now().String())
 }
 
 func postgresConnect() (*gorm.DB, error) {
 	dbConnection := config.Get("DB_GORM_CONNECTION")
+	fmt.Println("nasi " + dbConnection)
 	if dbConnection == "" {
 		return nil, errors.New("can't connect to DB")
 	}

@@ -1,22 +1,12 @@
 include .env
 
 build:
-	@go build -v -o wallet-djoin ./cmd/*.go
+	@go build -v -o cronjob-be ./cmd/*.go
 
 run:
-	@echo "RUN wallet-djoin..."
+	@echo "RUN cronjob-be..."
 	make build
-	@./wallet-djoin
-
-test:
-	@go test ./internal/...
-
-test-coverage:
-	@go test ./internal/... -cover -v
-
-test-coverage-html:
-	@go test ./internal/... -coverprofile=coverage.out
-	@go tool cover -html=coverage.out
+	@./cronjob-be
 
 migrate:
 	@migrate -database ${DB_MIGRATION_CONNECTION} -path database/migrations up
