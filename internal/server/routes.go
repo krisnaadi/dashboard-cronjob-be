@@ -2,34 +2,37 @@ package server
 
 import (
 	app "github.com/krisnaadi/dashboard-cronjob-be/internal/app"
+	"github.com/krisnaadi/dashboard-cronjob-be/pkg/config"
 
+	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 )
 
 type Router struct {
-	Echo    *echo.Echo
-	Handler *app.Handlers
+	Echo       *echo.Echo
+	Handler    *app.Handlers
+	Middleware *app.Middleware
 }
 
-func NewRouter(e *echo.Echo, handler *app.Handlers) *Router {
+func NewRouter(e *echo.Echo, handler *app.Handlers, middleware *app.Middleware) *Router {
 	router := &Router{
-		Echo:    e,
-		Handler: handler,
+		Echo:       e,
+		Handler:    handler,
+		Middleware: middleware,
 	}
 
-	// // Register global middleware
-	// e.Use(middleware.LogRequest.LogRequest())
-	// e.Use(middleware.PanicHandler.HandlePanic())
-	// e.Use(middleware.HttpWrapper.HttpWrapper())
+	// Register global middleware
+	e.Use(middleware.LogRequest.LogRequest())
+	e.Use(middleware.PanicHandler.HandlePanic())
+	e.Use(middleware.HttpWrapper.HttpWrapper())
 
-	// // Group middleware that usually used
-	// groupMiddleware := []echo.MiddlewareFunc{
-	// 	middleware.Signature.SignatureCheckMiddleware(),
-	// 	middleware.Prometheus.MetricCollector(),
-	// }
+	// Group middleware that usually used
+	groupMiddleware := []echo.MiddlewareFunc{
+		echojwt.JWT([]byte(config.Get("JWT_KEY"))),
+	}
 
 	// Register routes
-	RegisterCronjobRoutes(router)
+	RegisterCronjobRoutes(router, groupMiddleware...)
 	RegisterAuthRoutes(router)
 	return router
 }

@@ -27,8 +27,9 @@ const (
 )
 
 type Server struct {
-	handler *app.Handlers
-	http    *http.Server
+	handler    *app.Handlers
+	http       *http.Server
+	middleware *app.Middleware
 }
 
 func NewHTTP(ctx context.Context) *Server {
@@ -43,11 +44,14 @@ func NewHTTP(ctx context.Context) *Server {
 	useCase := app.NewUseCase(resource)
 	handler := app.NewHandler(useCase)
 
+	middleware := app.NewMiddleware(useCase)
+
 	logger.Init(slug.Make(config.Get("APP_NAME")))
 	logger.Info(ctx, nil, nil, "Connecting - NewHTTP")
 
 	return &Server{
-		handler: handler,
+		handler:    handler,
+		middleware: middleware,
 	}
 }
 
@@ -73,7 +77,7 @@ func (s *Server) Run() *http.Server {
 	e.Use(middleware.CORS())
 
 	e.GET("/", handleHelloWorld)
-	NewRouter(e, s.handler)
+	NewRouter(e, s.handler, s.middleware)
 
 	s.http = &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),
