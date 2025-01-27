@@ -93,7 +93,6 @@ func handleHelloWorld(ctx echo.Context) error {
 
 func postgresConnect() (*gorm.DB, error) {
 	dbConnection := config.Get("DB_GORM_CONNECTION")
-	fmt.Println("nasi " + dbConnection)
 	if dbConnection == "" {
 		return nil, errors.New("can't connect to DB")
 	}

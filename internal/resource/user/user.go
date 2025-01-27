@@ -17,6 +17,16 @@ func (resource *Resource) GetUserByID(ctx context.Context, ID int64) (entity.Use
 	return user, nil
 }
 
+func (resource *Resource) GetUserByEmail(ctx context.Context, email string) (entity.User, error) {
+	user, err := resource.user.GetUserByEmail(ctx, email)
+	if err != nil {
+		logger.Trace(ctx, struct{ email string }{email}, err, "resource.user.GetUserByEmail() error - GetUserByEmail")
+		return user, err
+	}
+
+	return user, nil
+}
+
 func (resource *Resource) GetUsers(ctx context.Context) ([]entity.User, error) {
 	users, err := resource.user.GetUsers(ctx)
 	if err != nil {

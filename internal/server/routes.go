@@ -29,10 +29,21 @@ func NewRouter(e *echo.Echo, handler *app.Handlers) *Router {
 	// }
 
 	// Register routes
-	RegisterClientRoutes(router)
+	RegisterCronjobRoutes(router)
+	RegisterAuthRoutes(router)
 	return router
 }
 
-func RegisterClientRoutes(router *Router, m ...echo.MiddlewareFunc) {
-	router.Echo.GET("api/v1/cronjob", router.Handler.Cronjob.HandleGetCronjob, m...)
+func RegisterCronjobRoutes(router *Router, m ...echo.MiddlewareFunc) {
+	router.Echo.GET("api/v1/jobs", router.Handler.Cronjob.HandleGetCronjob, m...)
+	router.Echo.GET("api/v1/jobs/:id", router.Handler.Cronjob.HandleShowCronjob, m...)
+	router.Echo.POST("api/v1/jobs", router.Handler.Cronjob.HandleCreateCronjob, m...)
+	router.Echo.PUT("api/v1/jobs/:id", router.Handler.Cronjob.HandleEditCronjob, m...)
+	router.Echo.DELETE("api/v1/jobs/:id", router.Handler.Cronjob.HandleEditCronjob, m...)
+}
+
+func RegisterAuthRoutes(router *Router, m ...echo.MiddlewareFunc) {
+	router.Echo.POST("api/v1/auth/login", router.Handler.Auth.HandleLogin, m...)
+	router.Echo.POST("api/v1/auth/signup", router.Handler.Auth.HandleRegister, m...)
+	router.Echo.GET("api/v1/auth/user", router.Handler.Auth.HandleShowUser, m...)
 }

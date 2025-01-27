@@ -14,6 +14,7 @@ type RepositoryProvider interface {
 	InsertUser(ctx context.Context, user entity.User) (entity.User, error)
 	UpdateUser(ctx context.Context, user entity.User) (entity.User, error)
 	DeleteUser(ctx context.Context, ID int64) error
+	GetUserByEmail(ctx context.Context, email string) (entity.User, error)
 }
 
 type Repository struct {

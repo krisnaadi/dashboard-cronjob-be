@@ -19,6 +19,18 @@ func (repository *Repository) GetUserByID(ctx context.Context, ID int64) (entity
 	return user, nil
 }
 
+func (repository *Repository) GetUserByEmail(ctx context.Context, Email string) (entity.User, error) {
+	var user entity.User
+
+	err := repository.db.Where("email = ?", Email).Find(&user).Error
+	if err != nil {
+		logger.Trace(ctx, struct{ Email string }{Email}, err, "repository.db.Where().Find() error - GetUserByEmail")
+		return entity.User{}, err
+	}
+
+	return user, nil
+}
+
 func (repository *Repository) GetUsers(ctx context.Context) ([]entity.User, error) {
 	var users []entity.User
 	err := repository.db.Order("id asc").Find(&users).Error
