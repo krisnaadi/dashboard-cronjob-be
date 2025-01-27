@@ -23,7 +23,7 @@ import (
 
 const (
 	timeoutServer = 60
-	port          = 8081
+	port          = 8080
 )
 
 type Server struct {
