@@ -20,15 +20,15 @@ func (repository *Repository) GetUserByID(ctx context.Context, ID int64) (entity
 }
 
 func (repository *Repository) GetUsers(ctx context.Context) ([]entity.User, error) {
-	var categories []entity.User
-	err := repository.db.Order("id asc").Find(&categories).Error
+	var users []entity.User
+	err := repository.db.Order("id asc").Find(&users).Error
 
 	if err != nil {
 		logger.Trace(ctx, nil, err, "repository.db.Order().Find() error - GetUsers")
 		return nil, err
 	}
 
-	return categories, nil
+	return users, nil
 }
 
 func (repository *Repository) InsertUser(ctx context.Context, user entity.User) (entity.User, error) {

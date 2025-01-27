@@ -20,15 +20,15 @@ func (repository *Repository) GetLogByID(ctx context.Context, ID int64) (entity.
 }
 
 func (repository *Repository) GetLogs(ctx context.Context) ([]entity.Log, error) {
-	var categories []entity.Log
-	err := repository.db.Order("id asc").Find(&categories).Error
+	var logs []entity.Log
+	err := repository.db.Order("id asc").Find(&logs).Error
 
 	if err != nil {
 		logger.Trace(ctx, nil, err, "repository.db.Order().Find() error - GetLogs")
 		return nil, err
 	}
 
-	return categories, nil
+	return logs, nil
 }
 
 func (repository *Repository) InsertLog(ctx context.Context, log entity.Log) (entity.Log, error) {
