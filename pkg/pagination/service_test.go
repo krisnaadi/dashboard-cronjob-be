@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
-	"github.com/tech-djoin/wallet-djoin-service/internal/constant"
 )
 
 func TestGetStartRowAndLimit(t *testing.T) {
@@ -25,7 +24,7 @@ func TestGetStartRowAndLimit(t *testing.T) {
 				page: 2,
 			},
 			want:  10,
-			want1: constant.LIMIT,
+			want1: 10,
 		},
 		{
 			name: "case get page less than 1",
@@ -33,7 +32,7 @@ func TestGetStartRowAndLimit(t *testing.T) {
 				page: 0,
 			},
 			want:  0,
-			want1: constant.LIMIT,
+			want1: 10,
 		},
 	}
 	for _, tt := range tests {

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/tech-djoin/wallet-djoin-service/internal/constant"
 )
 
 func CurrencyFormat(amount float64) string {
@@ -37,5 +36,5 @@ func FormattedDateToString(dateString string, layout string, format string) stri
 }
 
 func FullDateTimeFormat(dateTime time.Time) string {
-	return dateTime.Format(constant.TimeStampFormatYYYMMDDHHIISS)
+	return dateTime.Format("2006-01-02 15:04:05")
 }

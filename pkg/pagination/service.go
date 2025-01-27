@@ -5,14 +5,13 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/tech-djoin/wallet-djoin-service/internal/constant"
 )
 
 func GetStartRowAndLimit(page int) (int, int) {
 	if page > 0 {
-		return ((constant.LIMIT * page) - constant.LIMIT), constant.LIMIT
+		return ((10 * page) - 10), 10
 	}
-	return 0, constant.LIMIT
+	return 0, 10
 }
 
 func GetPrevPage(c echo.Context, page int) string {

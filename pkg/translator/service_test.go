@@ -8,9 +8,8 @@ import (
 	"time"
 
 	"github.com/go-playground/validator"
+	"github.com/krisnaadi/dashboard-cronjob-be/pkg/customvalidator"
 	"github.com/labstack/echo/v4"
-	"github.com/tech-djoin/wallet-djoin-service/internal/constant"
-	"github.com/tech-djoin/wallet-djoin-service/internal/pkg/customvalidator"
 )
 
 type CustomValidator struct {
@@ -38,7 +37,7 @@ func ValidateDateFormat(fl validator.FieldLevel) bool {
 		return true
 	}
 
-	_, err := time.Parse(constant.DateFormatYYYYMMDD, dateStr)
+	_, err := time.Parse("2006-01-02", dateStr)
 	return err == nil
 }
 

@@ -10,9 +10,9 @@ import (
 	"runtime"
 
 	"github.com/google/uuid"
+	"github.com/krisnaadi/dashboard-cronjob-be/pkg/config"
+	"github.com/krisnaadi/dashboard-cronjob-be/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"github.com/tech-djoin/wallet-djoin-service/internal/pkg/config"
-	"github.com/tech-djoin/wallet-djoin-service/internal/pkg/errors"
 )
 
 type key string

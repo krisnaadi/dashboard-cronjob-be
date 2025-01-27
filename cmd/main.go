@@ -14,6 +14,7 @@ func main() {
 	server := http.NewHTTP(ctx)
 
 	go func() {
+
 		err := server.Run().ListenAndServe()
 		if err != nil {
 			log.Fatal("server.Run().ListenAndServe() error - mainHTTP")
