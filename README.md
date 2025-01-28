@@ -14,38 +14,41 @@ To get started with the development setup:
   git clone https://github.com/krisnaadi/dashboard-cronjob-be
   cd dashboard-cronjob-be
 ```
-2. Copy .env
+2. import database/cronjob.sql
+
+3. Copy .env
 ```bash
 cp .env.example .env
 ```
-3. Build the application
+4. Build the application
 
 ```bash
 make build
 ```
 
-4. Run the application
+5. Run the application
 ```bash
 make run
 ```
-```
 
 To deploy using docker:
+
 1. Clone this repository:
 ```bash
   git clone https://github.com/krisnaadi/dashboard-cronjob-be
   cd dashboard-cronjob-be
 ```
-2. Copy .env
+2. import database/cronjob.sql
+3. Copy .env
 ```bash
 cp .env.example .env
 ```
-3. configure .env file
-4. build docker image
+4. configure .env file
+5. build docker image
 ```bash
 docker compose build
 ```
-4. run docker container
+6. run docker container
 ```bash
 docker compose up -d
 ```
