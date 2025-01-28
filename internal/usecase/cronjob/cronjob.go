@@ -8,9 +8,9 @@ import (
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/logger"
 )
 
-func (useCase *UseCase) ListCronjob(ctx context.Context) ([]entity.Cronjob, error) {
+func (useCase *UseCase) ListCronjob(ctx context.Context, UserId int64) ([]entity.Cronjob, error) {
 
-	categories, err := useCase.cronjob.GetCronjobs(ctx)
+	categories, err := useCase.cronjob.GetCronjobs(ctx, UserId)
 	if err != nil {
 		logger.Trace(ctx, nil, err, "useCase.cronjob.GetCategories() error - ListCronjob")
 		return categories, err
@@ -19,9 +19,9 @@ func (useCase *UseCase) ListCronjob(ctx context.Context) ([]entity.Cronjob, erro
 	return categories, nil
 }
 
-func (useCase *UseCase) GetCronjob(ctx context.Context, ID int64) (entity.Cronjob, error) {
+func (useCase *UseCase) GetCronjob(ctx context.Context, ID int64, UserId int64) (entity.Cronjob, error) {
 
-	cronjob, err := useCase.cronjob.GetCronjobByID(ctx, ID)
+	cronjob, err := useCase.cronjob.GetCronjobByID(ctx, ID, UserId)
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "useCase.cronjob.GetCronjobByID() error - GetCronjob")
 		return cronjob, err
@@ -30,14 +30,14 @@ func (useCase *UseCase) GetCronjob(ctx context.Context, ID int64) (entity.Cronjo
 	return cronjob, nil
 }
 
-func (useCase *UseCase) AddCronjob(ctx context.Context, input CronjobRequest) (entity.Cronjob, error) {
+func (useCase *UseCase) AddCronjob(ctx context.Context, input CronjobRequest, UserId int64) (entity.Cronjob, error) {
 
 	cronjob := entity.Cronjob{
 		Name:     input.Name,
 		Task:     input.Task,
 		Schedule: input.Schedule,
 		Status:   input.Status,
-		UserId:   1, //todo change to user login
+		UserId:   UserId,
 	}
 
 	cronjob, err := useCase.cronjob.AddCronjob(ctx, cronjob)
@@ -49,9 +49,9 @@ func (useCase *UseCase) AddCronjob(ctx context.Context, input CronjobRequest) (e
 	return cronjob, nil
 }
 
-func (useCase *UseCase) UpdateCronjob(ctx context.Context, ID int64, input CronjobRequest) (entity.Cronjob, error) {
+func (useCase *UseCase) UpdateCronjob(ctx context.Context, ID int64, input CronjobRequest, UserId int64) (entity.Cronjob, error) {
 
-	oldCronjob, err := useCase.cronjob.GetCronjobByID(ctx, ID)
+	oldCronjob, err := useCase.cronjob.GetCronjobByID(ctx, ID, UserId)
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "useCase.cronjob.GetCronjobByID() error - UpdateCronjob")
 		return oldCronjob, err
@@ -78,9 +78,9 @@ func (useCase *UseCase) UpdateCronjob(ctx context.Context, ID int64, input Cronj
 	return cronjob, nil
 }
 
-func (useCase *UseCase) DeleteCronjob(ctx context.Context, ID int64) error {
+func (useCase *UseCase) DeleteCronjob(ctx context.Context, ID int64, UserId int64) error {
 
-	cronjob, err := useCase.cronjob.GetCronjobByID(ctx, ID)
+	cronjob, err := useCase.cronjob.GetCronjobByID(ctx, ID, UserId)
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "useCase.cronjob.GetCronjobByID() error - DeleteCronjob")
 		return err
@@ -90,7 +90,7 @@ func (useCase *UseCase) DeleteCronjob(ctx context.Context, ID int64) error {
 		return errors.New("data cronjob not found")
 	}
 
-	err = useCase.cronjob.DeleteCronjob(ctx, cronjob.ID)
+	err = useCase.cronjob.DeleteCronjob(ctx, cronjob.ID, UserId)
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{cronjob.ID}, err, "useCase.cronjob.DeleteCronjob() error - DeleteCronjob")
 		return err

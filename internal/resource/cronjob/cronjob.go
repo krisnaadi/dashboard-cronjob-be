@@ -7,8 +7,8 @@ import (
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/logger"
 )
 
-func (resource *Resource) GetCronjobByID(ctx context.Context, ID int64) (entity.Cronjob, error) {
-	cronjob, err := resource.cronjob.GetCronjobByID(ctx, ID)
+func (resource *Resource) GetCronjobByID(ctx context.Context, ID int64, UserId int64) (entity.Cronjob, error) {
+	cronjob, err := resource.cronjob.GetCronjobByID(ctx, ID, UserId)
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "resource.cronjob.GetCronjobByID() error - GetCronjobByID")
 		return cronjob, err
@@ -17,8 +17,8 @@ func (resource *Resource) GetCronjobByID(ctx context.Context, ID int64) (entity.
 	return cronjob, nil
 }
 
-func (resource *Resource) GetCronjobs(ctx context.Context) ([]entity.Cronjob, error) {
-	cronjobs, err := resource.cronjob.GetCronjobs(ctx)
+func (resource *Resource) GetCronjobs(ctx context.Context, UserId int64) ([]entity.Cronjob, error) {
+	cronjobs, err := resource.cronjob.GetCronjobs(ctx, UserId)
 	if err != nil {
 		logger.Trace(ctx, nil, err, "resource.cronjob.GetCronjobs() error - GetCronjobs")
 		return cronjobs, err
@@ -47,9 +47,9 @@ func (resource *Resource) UpdateCronjob(ctx context.Context, ID int64, cronjob e
 	return newCronjob, nil
 }
 
-func (resource *Resource) DeleteCronjob(ctx context.Context, ID int64) error {
+func (resource *Resource) DeleteCronjob(ctx context.Context, ID int64, UserId int64) error {
 
-	err := resource.cronjob.DeleteCronjob(ctx, ID)
+	err := resource.cronjob.DeleteCronjob(ctx, ID, UserId)
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "resource.cronjob.DeleteCronjob() error - DeleteCronjob")
 		return err

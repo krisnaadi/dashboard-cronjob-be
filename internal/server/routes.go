@@ -4,7 +4,7 @@ import (
 	app "github.com/krisnaadi/dashboard-cronjob-be/internal/app"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/config"
 
-	echojwt "github.com/labstack/echo-jwt"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -28,7 +28,9 @@ func NewRouter(e *echo.Echo, handler *app.Handlers, middleware *app.Middleware) 
 
 	// Group middleware that usually used
 	groupMiddleware := []echo.MiddlewareFunc{
-		echojwt.JWT([]byte(config.Get("JWT_KEY"))),
+		echojwt.WithConfig(echojwt.Config{
+			SigningKey: []byte(config.Get("JWT_KEY")),
+		}),
 	}
 
 	// Register routes

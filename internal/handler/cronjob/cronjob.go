@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/krisnaadi/dashboard-cronjob-be/internal/usecase/cronjob"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/logger"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/writer"
@@ -13,7 +14,19 @@ import (
 func (handler *Handler) HandleGetCronjob(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	cronjobs, err := handler.cronjob.ListCronjob(ctx)
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		response := writer.APIResponse("JWT token missing or invalid", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		response := writer.APIResponse("failed to cast claims as jwt.MapClaims", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	cronjobs, err := handler.cronjob.ListCronjob(ctx, int64(claims["id"].(float64)))
 	if err != nil {
 		logger.Error(ctx, nil, err, "handler.cronjob.ListCronjob() error - HandleGetCronjob")
 		response := writer.APIResponse("Get Cronjobs Fail", false, nil)
@@ -37,6 +50,17 @@ func (handler *Handler) HandleGetCronjob(c echo.Context) error {
 
 func (handler *Handler) HandleShowCronjob(c echo.Context) error {
 	ctx := c.Request().Context()
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		response := writer.APIResponse("JWT token missing or invalid", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		response := writer.APIResponse("failed to cast claims as jwt.MapClaims", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
 	ID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		logger.Error(ctx, nil, err, "strconv.ParseInt() error - HandleShowCronjob")
@@ -44,7 +68,7 @@ func (handler *Handler) HandleShowCronjob(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	cronjob, err := handler.cronjob.GetCronjob(ctx, ID)
+	cronjob, err := handler.cronjob.GetCronjob(ctx, ID, int64(claims["id"].(float64)))
 	if err != nil {
 		logger.Error(ctx, nil, err, "handler.cronjob.GetCronjob() error - HandleShowCronjob")
 		response := writer.APIResponse("Get Cronjob Fail", false, nil)
@@ -71,6 +95,18 @@ func (handler *Handler) HandleShowCronjob(c echo.Context) error {
 func (handler *Handler) HandleCreateCronjob(c echo.Context) error {
 	ctx := c.Request().Context()
 
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		response := writer.APIResponse("JWT token missing or invalid", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		response := writer.APIResponse("failed to cast claims as jwt.MapClaims", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
 	var input cronjob.CronjobRequest
 	if err := c.Bind(&input); err != nil {
 		logger.Error(ctx, nil, err, "c.Bind() error - HandleCreateCronjob")
@@ -84,7 +120,7 @@ func (handler *Handler) HandleCreateCronjob(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	cronjob, err := handler.cronjob.AddCronjob(ctx, input)
+	cronjob, err := handler.cronjob.AddCronjob(ctx, input, int64(claims["id"].(float64)))
 	if err != nil {
 		logger.Error(ctx, nil, err, "handler.cronjob.AddCronjob() error - HandleCreateCronjob")
 		response := writer.APIResponse("Store Cronjob Fail", false, nil)
@@ -105,6 +141,19 @@ func (handler *Handler) HandleCreateCronjob(c echo.Context) error {
 
 func (handler *Handler) HandleEditCronjob(c echo.Context) error {
 	ctx := c.Request().Context()
+
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		response := writer.APIResponse("JWT token missing or invalid", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		response := writer.APIResponse("failed to cast claims as jwt.MapClaims", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
 	ID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		logger.Error(ctx, nil, err, "strconv.ParseInt() error - HandleEditCronjob")
@@ -125,7 +174,7 @@ func (handler *Handler) HandleEditCronjob(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	cronjob, err := handler.cronjob.UpdateCronjob(ctx, ID, input)
+	cronjob, err := handler.cronjob.UpdateCronjob(ctx, ID, input, int64(claims["id"].(float64)))
 	if err != nil {
 		logger.Error(ctx, nil, err, "handler.cronjob.UpdateCronjob() error - HandleEditCronjob")
 		response := writer.APIResponse("Update Cronjob Fail", false, nil)
@@ -146,6 +195,19 @@ func (handler *Handler) HandleEditCronjob(c echo.Context) error {
 
 func (handler *Handler) HandleDeleteCronjob(c echo.Context) error {
 	ctx := c.Request().Context()
+
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		response := writer.APIResponse("JWT token missing or invalid", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		response := writer.APIResponse("failed to cast claims as jwt.MapClaims", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
 	ID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		logger.Error(ctx, nil, err, "strconv.ParseInt() error - HandleDeleteCronjob")
@@ -153,7 +215,7 @@ func (handler *Handler) HandleDeleteCronjob(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	err = handler.cronjob.DeleteCronjob(ctx, ID)
+	err = handler.cronjob.DeleteCronjob(ctx, ID, int64(claims["id"].(float64)))
 	if err != nil {
 		logger.Error(ctx, nil, err, "handler.cronjob.DeleteCronjob() error - HandleDeleteCronjob")
 		response := writer.APIResponse("Delete Cronjob Fail", false, nil)

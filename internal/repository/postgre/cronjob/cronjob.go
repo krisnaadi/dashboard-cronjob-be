@@ -7,10 +7,10 @@ import (
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/logger"
 )
 
-func (repository *Repository) GetCronjobByID(ctx context.Context, ID int64) (entity.Cronjob, error) {
+func (repository *Repository) GetCronjobByID(ctx context.Context, ID int64, UserId int64) (entity.Cronjob, error) {
 	var cronjob entity.Cronjob
 
-	err := repository.db.Where("id = ?", ID).Find(&cronjob).Error
+	err := repository.db.Where("id = ?", ID).Where("user_id = ?", UserId).Find(&cronjob).Error
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "repository.db.Where().Find() error - GetCronjobByID")
 		return entity.Cronjob{}, err
@@ -19,9 +19,9 @@ func (repository *Repository) GetCronjobByID(ctx context.Context, ID int64) (ent
 	return cronjob, nil
 }
 
-func (repository *Repository) GetCronjobs(ctx context.Context) ([]entity.Cronjob, error) {
+func (repository *Repository) GetCronjobs(ctx context.Context, UserId int64) ([]entity.Cronjob, error) {
 	var cronjobs []entity.Cronjob
-	err := repository.db.Order("id asc").Find(&cronjobs).Error
+	err := repository.db.Where("user_id = ?", UserId).Order("id asc").Find(&cronjobs).Error
 
 	if err != nil {
 		logger.Trace(ctx, nil, err, "repository.db.Order().Find() error - GetCronjobs")
@@ -51,8 +51,8 @@ func (repository *Repository) UpdateCronjob(ctx context.Context, cronjob entity.
 	return cronjob, nil
 }
 
-func (repository *Repository) DeleteCronjob(ctx context.Context, ID int64) error {
-	err := repository.db.Delete(&entity.Cronjob{}, ID).Error
+func (repository *Repository) DeleteCronjob(ctx context.Context, ID int64, UserId int64) error {
+	err := repository.db.Where("user_id = ?", UserId).Delete(&entity.Cronjob{}).Error
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "repository.db.Delete() error - DeleteCronjob")
 		return err

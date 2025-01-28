@@ -2,9 +2,11 @@ package auth
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/krisnaadi/dashboard-cronjob-be/internal/entity"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/config"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/logger"
@@ -30,8 +32,13 @@ func (useCase *UseCase) Login(ctx context.Context, input LoginRequest) (entity.U
 		return user, err
 	}
 
+	if user.ID == 0 {
+		return entity.User{}, errors.New("user not found")
+	}
+
 	if !CheckPasswordHash(input.Password, user.Password) {
-		return entity.User{}, err
+		fmt.Println("wrong password")
+		return entity.User{}, errors.New("wrong password")
 	}
 
 	return user, nil
@@ -46,7 +53,7 @@ func (useCase *UseCase) Register(ctx context.Context, input RegisterRequest) (en
 
 	user := entity.User{
 		Name:     input.Name,
-		Email:    input.Password,
+		Email:    input.Email,
 		Password: hashedPass,
 	}
 	user, err = useCase.user.AddUser(ctx, user)
@@ -61,6 +68,7 @@ func (useCase *UseCase) Register(ctx context.Context, input RegisterRequest) (en
 func (useCase *UseCase) GenerateToken(ctx context.Context, user entity.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
+			"id":    user.ID,
 			"email": user.Email,
 			"name":  user.Name,
 			"exp":   time.Now().Add(time.Hour * 24).Unix(),

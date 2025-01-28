@@ -9,11 +9,11 @@ import (
 )
 
 type RepositoryProvider interface {
-	GetCronjobs(ctx context.Context) ([]entity.Cronjob, error)
-	GetCronjobByID(ctx context.Context, ID int64) (entity.Cronjob, error)
+	GetCronjobs(ctx context.Context, UserId int64) ([]entity.Cronjob, error)
+	GetCronjobByID(ctx context.Context, ID int64, UserId int64) (entity.Cronjob, error)
 	InsertCronjob(ctx context.Context, cronjob entity.Cronjob) (entity.Cronjob, error)
 	UpdateCronjob(ctx context.Context, cronjob entity.Cronjob) (entity.Cronjob, error)
-	DeleteCronjob(ctx context.Context, ID int64) error
+	DeleteCronjob(ctx context.Context, ID int64, UserId int64) error
 }
 
 type Repository struct {
