@@ -9,11 +9,8 @@ import (
 )
 
 type RepositoryProvider interface {
-	GetLogs(ctx context.Context) ([]entity.Log, error)
-	GetLogByID(ctx context.Context, ID int64) (entity.Log, error)
+	GetLogs(ctx context.Context, JobId int64) ([]entity.Log, error)
 	InsertLog(ctx context.Context, log entity.Log) (entity.Log, error)
-	UpdateLog(ctx context.Context, log entity.Log) (entity.Log, error)
-	DeleteLog(ctx context.Context, ID int64) error
 }
 
 type Repository struct {

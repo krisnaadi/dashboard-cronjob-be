@@ -8,7 +8,6 @@ import (
 	"github.com/krisnaadi/dashboard-cronjob-be/internal/entity"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/execcommand"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/logger"
-	"github.com/krisnaadi/dashboard-cronjob-be/pkg/scheduler"
 )
 
 func (useCase *UseCase) ListCronjob(ctx context.Context, UserId int64) ([]entity.Cronjob, error) {
@@ -108,12 +107,38 @@ func (useCase *UseCase) RunAllCronjob(ctx context.Context) error {
 		logger.Trace(ctx, nil, err, "useCase.cronjob.GetAllActiveCronjob() error - RunAllCronjob")
 		return err
 	}
-	scheduler := scheduler.New()
+	useCase.scheduler.Clear()
 	for _, cronjob := range cronjobs {
-		scheduler.AddJob(cronjob.Schedule, runTask(ctx, cronjob, useCase))
+		useCase.scheduler.AddJob(cronjob.Schedule, runTask(ctx, cronjob, useCase))
 	}
 
 	return nil
+}
+
+func (useCase *UseCase) RunCronjobManualy(ctx context.Context, ID int64) error {
+
+	cronjob, err := useCase.cronjob.GetCronjobByID(ctx, ID, 0)
+	if err != nil {
+		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "useCase.cronjob.GetCronjobByID() error - RunCronjobManualy")
+		return err
+	}
+
+	if cronjob.ID == 0 {
+		return errors.New("data cronjob not found")
+	}
+
+	return runTask(ctx, cronjob, useCase)
+}
+
+func (useCase *UseCase) GetLogByCronjob(ctx context.Context, ID int64) ([]entity.Log, error) {
+
+	logs, err := useCase.log.GetLogs(ctx, ID)
+	if err != nil {
+		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "useCase.log.GetLogs() error - GetLogByCronjob")
+		return logs, err
+	}
+
+	return logs, nil
 }
 
 func runTask(ctx context.Context, cronjob entity.Cronjob, useCase *UseCase) error {

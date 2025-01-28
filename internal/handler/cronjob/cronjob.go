@@ -136,6 +136,13 @@ func (handler *Handler) HandleCreateCronjob(c echo.Context) error {
 		Status:   cronjob.Status,
 	}
 
+	err = handler.cronjob.RunAllCronjob(ctx)
+	if err != nil {
+		logger.Error(ctx, nil, err, "handler.cronjob.RunAllCronjob() error - HandleDeleteCronjob")
+		response := writer.APIResponse("Rerun Cronjob Fail", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
 	response := writer.APIResponse("Store Cronjob Successfully", true, cronjobResponse)
 	return c.JSON(http.StatusOK, response)
 }
@@ -190,6 +197,13 @@ func (handler *Handler) HandleEditCronjob(c echo.Context) error {
 		Status:   cronjob.Status,
 	}
 
+	err = handler.cronjob.RunAllCronjob(ctx)
+	if err != nil {
+		logger.Error(ctx, nil, err, "handler.cronjob.RunAllCronjob() error - HandleDeleteCronjob")
+		response := writer.APIResponse("Rerun Cronjob Fail", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
 	response := writer.APIResponse("Update Cronjob Successfully", true, cronjobResponse)
 	return c.JSON(http.StatusOK, response)
 }
@@ -223,10 +237,57 @@ func (handler *Handler) HandleDeleteCronjob(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
+	err = handler.cronjob.RunAllCronjob(ctx)
+	if err != nil {
+		logger.Error(ctx, nil, err, "handler.cronjob.RunAllCronjob() error - HandleDeleteCronjob")
+		response := writer.APIResponse("Rerun Cronjob Fail", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
 	response := writer.APIResponse("Delete Cronjob Successfully", true, nil)
 	return c.JSON(http.StatusOK, response)
 }
 
 func (handler *Handler) HandleRunAllCronjob(ctx context.Context) error {
 	return handler.cronjob.RunAllCronjob(ctx)
+}
+
+func (handler *Handler) HandleRunCronjobManualy(c echo.Context) error {
+	ctx := c.Request().Context()
+	ID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		logger.Error(ctx, nil, err, "strconv.ParseInt() error - HandleRunCronjobManualy")
+		response := writer.APIResponse("ID is not valid", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	err = handler.cronjob.RunCronjobManualy(ctx, ID)
+	if err != nil {
+		logger.Error(ctx, nil, err, "handler.cronjob.RunCronjobManually() error - HandleRunCronjobManualy")
+		response := writer.APIResponse("Run Cronjob Manually Fail", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	response := writer.APIResponse("Run Cronjob Manually Successfully", true, nil)
+	return c.JSON(http.StatusOK, response)
+}
+
+func (handler *Handler) HandleGetLogByCronjob(c echo.Context) error {
+	ctx := c.Request().Context()
+	ID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		logger.Error(ctx, nil, err, "strconv.ParseInt() error - HandleGetLogByCronjob")
+		response := writer.APIResponse("ID is not valid", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	logs, err := handler.cronjob.GetLogByCronjob(ctx, ID)
+	if err != nil {
+		logger.Error(ctx, nil, err, "handler.cronjob.GetLogByCronjob() error - HandleGetLogByCronjob")
+		response := writer.APIResponse("Get Log By Cronjob Fail", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	response := writer.APIResponse("Get Log By Cronjob Successfully", true, logs)
+	return c.JSON(http.StatusOK, response)
 }

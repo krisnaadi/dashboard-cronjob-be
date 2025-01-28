@@ -15,6 +15,7 @@ import (
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/config"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/customvalidator"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/logger"
+	"github.com/krisnaadi/dashboard-cronjob-be/pkg/scheduler"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/driver/postgres"
@@ -39,9 +40,11 @@ func NewHTTP(ctx context.Context) *Server {
 		panic(err)
 	}
 
+	scheduler := scheduler.New()
+
 	repository := app.NewRepository(db)
 	resource := app.NewResource(repository)
-	useCase := app.NewUseCase(resource)
+	useCase := app.NewUseCase(resource, scheduler)
 	handler := app.NewHandler(useCase)
 
 	middleware := app.NewMiddleware(useCase)
