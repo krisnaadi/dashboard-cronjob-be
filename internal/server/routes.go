@@ -44,7 +44,7 @@ func RegisterCronjobRoutes(router *Router, m ...echo.MiddlewareFunc) {
 	router.Echo.GET("api/v1/jobs/:id", router.Handler.Cronjob.HandleShowCronjob, m...)
 	router.Echo.POST("api/v1/jobs", router.Handler.Cronjob.HandleCreateCronjob, m...)
 	router.Echo.PUT("api/v1/jobs/:id", router.Handler.Cronjob.HandleEditCronjob, m...)
-	router.Echo.DELETE("api/v1/jobs/:id", router.Handler.Cronjob.HandleEditCronjob, m...)
+	router.Echo.DELETE("api/v1/jobs/:id", router.Handler.Cronjob.HandleDeleteCronjob, m...)
 	router.Echo.POST("api/v1/jobs/:id/run", router.Handler.Cronjob.HandleRunCronjobManualy, m...)
 	router.Echo.GET("api/v1/jobs/:id/logs", router.Handler.Cronjob.HandleGetLogByCronjob, m...)
 }

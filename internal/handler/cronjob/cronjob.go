@@ -300,6 +300,16 @@ func (handler *Handler) HandleGetLogByCronjob(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	response := writer.APIResponse("Get Log By Cronjob Successfully", true, logs)
+	logResponse := []LogResponse{}
+	for _, log := range logs {
+		logResponse = append(logResponse, LogResponse{
+			ID:            log.ID,
+			ExecutionTime: log.ExecutionTime,
+			Status:        log.Status,
+			Duration:      log.Duration,
+			ErrorMessage:  log.ErrorMessage,
+		})
+	}
+	response := writer.APIResponse("Get Log By Cronjob Successfully", true, logResponse)
 	return c.JSON(http.StatusOK, response)
 }

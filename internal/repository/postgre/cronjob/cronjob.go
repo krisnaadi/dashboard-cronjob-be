@@ -52,7 +52,7 @@ func (repository *Repository) UpdateCronjob(ctx context.Context, cronjob entity.
 }
 
 func (repository *Repository) DeleteCronjob(ctx context.Context, ID int64, UserId int64) error {
-	err := repository.db.Where("user_id = ?", UserId).Delete(&entity.Cronjob{}).Error
+	err := repository.db.Where("user_id = ?", UserId).Where("id = ?", ID).Delete(&entity.Cronjob{}).Error
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "repository.db.Delete() error - DeleteCronjob")
 		return err
