@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-const ShellToUse = "bash"
+const ShellToUse = "/bin/sh"
 
 func Shellout(command string) error {
 	cmd := exec.Command(ShellToUse, "-c", command)

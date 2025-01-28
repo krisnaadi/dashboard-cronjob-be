@@ -19,6 +19,9 @@ FROM alpine:3.21.2
 
 WORKDIR /
 
+RUN apk --no-cache add curl
+RUN apk --no-cache add tzdata
+
 COPY --from=build /docker-cronjob-be /docker-cronjob-be
 COPY .env .env
 
