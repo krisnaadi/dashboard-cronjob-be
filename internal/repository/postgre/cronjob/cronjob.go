@@ -60,3 +60,15 @@ func (repository *Repository) DeleteCronjob(ctx context.Context, ID int64, UserI
 
 	return nil
 }
+
+func (repository *Repository) GetAllActiveCronjob(ctx context.Context) ([]entity.Cronjob, error) {
+	var cronjobs []entity.Cronjob
+	err := repository.db.Where("status = ?", true).Order("id asc").Find(&cronjobs).Error
+
+	if err != nil {
+		logger.Trace(ctx, nil, err, "repository.db.Order().Find() error - GetCronjobs")
+		return nil, err
+	}
+
+	return cronjobs, nil
+}

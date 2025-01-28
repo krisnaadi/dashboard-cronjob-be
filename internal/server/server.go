@@ -49,6 +49,11 @@ func NewHTTP(ctx context.Context) *Server {
 	logger.Init(slug.Make(config.Get("APP_NAME")))
 	logger.Info(ctx, nil, nil, "Connecting - NewHTTP")
 
+	err = handler.Cronjob.HandleRunAllCronjob(ctx)
+	if err != nil {
+		logger.Trace(ctx, nil, err, "handler.Cronjob.HandleRunAllCronjob() error - NewHTTP")
+	}
+
 	return &Server{
 		handler:    handler,
 		middleware: middleware,

@@ -14,6 +14,7 @@ type RepositoryProvider interface {
 	InsertCronjob(ctx context.Context, cronjob entity.Cronjob) (entity.Cronjob, error)
 	UpdateCronjob(ctx context.Context, cronjob entity.Cronjob) (entity.Cronjob, error)
 	DeleteCronjob(ctx context.Context, ID int64, UserId int64) error
+	GetAllActiveCronjob(ctx context.Context) ([]entity.Cronjob, error)
 }
 
 type Repository struct {

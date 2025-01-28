@@ -1,6 +1,7 @@
 package cronjob
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
@@ -224,4 +225,8 @@ func (handler *Handler) HandleDeleteCronjob(c echo.Context) error {
 
 	response := writer.APIResponse("Delete Cronjob Successfully", true, nil)
 	return c.JSON(http.StatusOK, response)
+}
+
+func (handler *Handler) HandleRunAllCronjob(ctx context.Context) error {
+	return handler.cronjob.RunAllCronjob(ctx)
 }

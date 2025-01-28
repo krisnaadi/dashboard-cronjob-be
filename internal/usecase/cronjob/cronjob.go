@@ -3,9 +3,12 @@ package cronjob
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/krisnaadi/dashboard-cronjob-be/internal/entity"
+	"github.com/krisnaadi/dashboard-cronjob-be/pkg/execcommand"
 	"github.com/krisnaadi/dashboard-cronjob-be/pkg/logger"
+	"github.com/krisnaadi/dashboard-cronjob-be/pkg/scheduler"
 )
 
 func (useCase *UseCase) ListCronjob(ctx context.Context, UserId int64) ([]entity.Cronjob, error) {
@@ -96,5 +99,48 @@ func (useCase *UseCase) DeleteCronjob(ctx context.Context, ID int64, UserId int6
 		return err
 	}
 
+	return nil
+}
+
+func (useCase *UseCase) RunAllCronjob(ctx context.Context) error {
+	cronjobs, err := useCase.cronjob.GetAllActiveCronjob(ctx)
+	if err != nil {
+		logger.Trace(ctx, nil, err, "useCase.cronjob.GetAllActiveCronjob() error - RunAllCronjob")
+		return err
+	}
+	scheduler := scheduler.New()
+	for _, cronjob := range cronjobs {
+		scheduler.AddJob(cronjob.Schedule, runTask(ctx, cronjob, useCase))
+	}
+
+	return nil
+}
+
+func runTask(ctx context.Context, cronjob entity.Cronjob, useCase *UseCase) error {
+	start := time.Now()
+	log := entity.Log{
+		JobId:         cronjob.ID,
+		ExecutionTime: start,
+	}
+	err := execcommand.Shellout(cronjob.Task)
+	if err != nil {
+		logger.Trace(ctx, struct{ ID int64 }{cronjob.ID}, err, "execcommand.Shellout() error - RunCronjob")
+		log.Status = false
+		log.ErrorMessage = err.Error()
+		log.Duration = time.Since(start).Milliseconds()
+		_, err = useCase.log.AddLog(ctx, log)
+		if err != nil {
+			logger.Trace(ctx, log, err, "useCase.log.AddLog() error - RunCronjob")
+			return err
+		}
+		return err
+	}
+	log.Status = true
+	log.Duration = time.Since(start).Milliseconds()
+	_, err = useCase.log.AddLog(ctx, log)
+	if err != nil {
+		logger.Trace(ctx, log, err, "useCase.log.AddLog() error - RunCronjob")
+		return err
+	}
 	return nil
 }

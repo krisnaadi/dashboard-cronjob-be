@@ -57,3 +57,13 @@ func (resource *Resource) DeleteCronjob(ctx context.Context, ID int64, UserId in
 
 	return nil
 }
+
+func (resource *Resource) GetAllActiveCronjob(ctx context.Context) ([]entity.Cronjob, error) {
+	cronjobs, err := resource.cronjob.GetAllActiveCronjob(ctx)
+	if err != nil {
+		logger.Trace(ctx, nil, err, "resource.cronjob.GetAllActiveCronjob() error - GetAllActiveCronjob")
+		return cronjobs, err
+	}
+
+	return cronjobs, nil
+}
