@@ -16,7 +16,7 @@ type UseCaseProvider interface {
 	UpdateCronjob(ctx context.Context, ID int64, input CronjobRequest, UserId int64) (entity.Cronjob, error)
 	DeleteCronjob(ctx context.Context, ID int64, UserId int64) error
 	RunAllCronjob(ctx context.Context) error
-	RunCronjobManualy(ctx context.Context, ID int64) error
+	RunCronjobManualy(ctx context.Context, ID int64, UserId int64) error
 	GetLogByCronjob(ctx context.Context, ID int64) ([]entity.Log, error)
 }
 

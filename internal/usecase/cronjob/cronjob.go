@@ -115,9 +115,9 @@ func (useCase *UseCase) RunAllCronjob(ctx context.Context) error {
 	return nil
 }
 
-func (useCase *UseCase) RunCronjobManualy(ctx context.Context, ID int64) error {
+func (useCase *UseCase) RunCronjobManualy(ctx context.Context, ID int64, UserId int64) error {
 
-	cronjob, err := useCase.cronjob.GetCronjobByID(ctx, ID, 0)
+	cronjob, err := useCase.cronjob.GetCronjobByID(ctx, ID, UserId)
 	if err != nil {
 		logger.Trace(ctx, struct{ ID int64 }{ID}, err, "useCase.cronjob.GetCronjobByID() error - RunCronjobManualy")
 		return err

@@ -261,7 +261,19 @@ func (handler *Handler) HandleRunCronjobManualy(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	err = handler.cronjob.RunCronjobManualy(ctx, ID)
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		response := writer.APIResponse("JWT token missing or invalid", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		response := writer.APIResponse("failed to cast claims as jwt.MapClaims", false, nil)
+		return c.JSON(http.StatusBadRequest, response)
+	}
+
+	err = handler.cronjob.RunCronjobManualy(ctx, ID, int64(claims["id"].(float64)))
 	if err != nil {
 		logger.Error(ctx, nil, err, "handler.cronjob.RunCronjobManually() error - HandleRunCronjobManualy")
 		response := writer.APIResponse("Run Cronjob Manually Fail", false, nil)
