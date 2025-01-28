@@ -2,6 +2,9 @@
 
 This project is the backend for a dashboard system that interacts with cronjobs.
 
+## DB schema
+https://dbdiagram.io/d/cronjob-6798e227263d6cf9a04c14d9
+
 ## Setup
 
 To get started with the development setup:
