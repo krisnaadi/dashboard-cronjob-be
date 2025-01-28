@@ -7,7 +7,7 @@ services:
     container_name: cronjob-be
     hostname: cronjob-be
     ports:
-      - 80:8080
+      - 8080:8080
   db:
     image: postgres:16
     restart: always
