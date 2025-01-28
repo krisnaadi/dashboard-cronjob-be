@@ -1,6 +1,6 @@
-# Dashboard Cronjob Frontend
+# Dashboard Cronjob Backend
 
-This project is the frontend for a dashboard system that interacts with cronjobs.
+This project is the backend for a dashboard system that interacts with cronjobs.
 
 ## Setup
 
@@ -8,8 +8,8 @@ To get started with the development setup:
 
 1. Clone this repository:
 ```bash
-  git clone https://github.com/krisnaadi/dashboard-cronjob-fe
-  cd dashboard-cronjob-fe
+  git clone https://github.com/krisnaadi/dashboard-cronjob-be
+  cd dashboard-cronjob-be
 ```
 2. Copy .env
 ```bash
