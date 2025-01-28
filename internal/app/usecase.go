@@ -13,7 +13,7 @@ type UseCases struct {
 // NewUseCase initializes useCase layer.
 func NewUseCase(resources *Resources) *UseCases {
 	return &UseCases{
-		cronjob: cronjob.New(resources.cronjob),
+		cronjob: cronjob.New(resources.cronjob, resources.log),
 		auth:    auth.New(resources.user),
 	}
 }
